@@ -51,11 +51,10 @@ class BaseModel:
         """Getter method for the 'id' attribute."""
         return self._created_at
 
-
     def __str__(self):
         """string function"""
         return(f"{[self.__class__.__name__]} {(self._id)} {self.__dict__}")
-    
+
     def to_dict(self):
         dictionary = self.__dict__
         dictionary['__class__'] = self.__class__.__name__
@@ -65,4 +64,8 @@ class BaseModel:
 
     def save(self):
         """ update datetime function"""
+        from . import storage
         self._updated_at = datetime.now()
+
+        storage.new(self)
+        storage.save()
