@@ -56,10 +56,11 @@ class BaseModel:
         return(f"{[self.__class__.__name__]} {(self._id)} {self.__dict__}")
 
     def to_dict(self):
-        dictionary = self.__dict__
+        """Returns a dictionary containing all keys/values of __dict__ of the instance."""
+        dictionary = self.__dict__.copy()
         dictionary['__class__'] = self.__class__.__name__
-        dictionary['_created_at'] = dictionary['_created_at'].isoformat()
-        dictionary['_updated_at'] = dictionary['_updated_at'].isoformat()
+        dictionary['_created_at'] = datetime.isoformat(dictionary['_created_at'])
+        dictionary['_updated_at'] = datetime.isoformat(dictionary['_updated_at'])
         return dictionary
 
     def save(self):
