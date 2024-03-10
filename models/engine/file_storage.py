@@ -30,7 +30,10 @@ class FileStorage:
 
     def save(self):
         """a function that is used to save a file."""
-        objects_dict = {key: value.to_dict() for key, value in FileStorage.__objects.items()}
+        objects_dict = {
+            key: value.to_dict()
+            for key, value in FileStorage.__objects.items()
+        }
         with open(FileStorage.__file_path, "w") as file:
             json.dump(objects_dict, file)
 
