@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 """Defines unittests for console.py.
 
-Unittest classes include create show etc.
+Unittest classes:
+    create, show, all, etc.
 """
 import os
 import sys
@@ -13,78 +14,37 @@ from io import StringIO
 from unittest.mock import patch
 
 
-class TestHBNBCommand_prompting(unittest.TestCase):
-    """Unittests for testing prompting of the HBNB command interpreter."""
+class TestHBNBCommand(unittest.TestCase):
+    """unit tests for the whole console"""
 
-    def test_01_prompt_string(self):
+    def setUp(self):
+        self.console = HBNBCommand()
+
+    def tearDown(self):
+        pass
+
+    @patch('sys.stdout', new_callable=StringIO)
+    def assert_stdout(self, expected_output, mock_stdout, co5mmand):
+        """unit tests for the whole console"""
+        with patch('builtins.input', return_value=command):
+            self.console.cmdloop()
+            self.assertEqual(
+                mock_stdout.getvalue().strip(),
+                expected_output.strip()
+            )
+
+    def test_02_prompt_string(self):
+        """unit tests for the whole console"""
         self.assertEqual("(hbnb) ", HBNBCommand.prompt)
 
-    def test_02_empty_line(self):
+    def test_03_empty_line(self):
+        """unit tests for the whole console"""
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd(""))
             self.assertEqual("", output.getvalue().strip())
 
-    def test_03_help_quit(self):
-        h = "Quit command to exit the program."
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("help quit"))
-            self.assertEqual(h, output.getvalue().strip())
-
-    def test_04_help_create(self):
-        h = ("Usage: create <class>\n        "
-             "Create a new class instance and print its id.")
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("help create"))
-            self.assertEqual(h, output.getvalue().strip())
-
-    def test_05_help_EOF(self):
-        h = "EOF signal to exit the program."
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("help EOF"))
-            self.assertEqual(h, output.getvalue().strip())
-
-    def test_06_help_show(self):
-        h = ("Usage: show <class> <id> or <class>.show(<id>)\n        "
-             "Display the string representation of a class instance of"
-             " a given id.")
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("help show"))
-            self.assertEqual(h, output.getvalue().strip())
-
-    def test_07_help_destroy(self):
-        h = ("Usage: destroy <class> <id> or <class>.destroy(<id>)\n        "
-             "Delete a class instance of a given id.")
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("help destroy"))
-            self.assertEqual(h, output.getvalue().strip())
-
-    def test_08_help_all(self):
-        h = ("Usage: all or all <class> or <class>.all()\n        "
-             "Display string representations of all instances of a given class"
-             ".\n        If no class is specified, displays all instantiated "
-             "objects.")
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("help all"))
-            self.assertEqual(h, output.getvalue().strip())
-
-    def test_09_help_count(self):
-        h = ("Usage: count <class> or <class>.count()\n        "
-             "Retrieve the number of instances of a given class.")
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("help count"))
-            self.assertEqual(h, output.getvalue().strip())
-
-    def test_10_help_update(self):
-        h = ("Usage: update <class> <id> <attribute_name> <attribute_value> or"
-             "\n       <class>.update(<id>, <attribute_name>, <attribute_value"
-             ">) or\n       <class>.update(<id>, <dictionary>)\n        "
-             "Update a class instance of a given id by adding or updating\n   "
-             "     a given attribute key/value pair or dictionary.")
-        with patch("sys.stdout", new=StringIO()) as output:
-            self.assertFalse(HBNBCommand().onecmd("help update"))
-            self.assertEqual(h, output.getvalue().strip())
-
-    def test_11_help(self):
+    def test_04_help(self):
+        """unit tests for the whole console"""
         h = ("Documented commands (type help <topic>):\n"
              "========================================\n"
              "EOF  all  count  create  destroy  help  quit  show  update")
@@ -92,9 +52,80 @@ class TestHBNBCommand_prompting(unittest.TestCase):
             self.assertFalse(HBNBCommand().onecmd("help"))
             self.assertEqual(h, output.getvalue().strip())
 
+    @classmethod
+    def setUp(self):
+        try:
+            os.rename("file.json", "tmp")
+        except IOError:
+            pass
+        FileStorage.__objects = {}
+
+    @classmethod
+    def tearDown(self):
+        try:
+            os.remove("file.json")
+        except IOError:
+            pass
+        try:
+            os.rename("tmp", "file.json")
+        except IOError:
+            pass
+
+    def test_08_create_missing_class(self):
+        """unit tests for the whole console"""
+        correct = "** class name missing **"
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("create"))
+            self.assertEqual(correct, output.getvalue().strip())
+
+    def test_09_create_invalid_class(self):
+        """unit tests for the whole console"""
+        correct = "** class doesn't exist **"
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("create MyModel"))
+            self.assertEqual(correct, output.getvalue().strip())
+
+    def test_10_create_invalid_syntax(self):
+        """unit tests for the whole console"""
+        correct = "*** Unknown syntax: MyModel.create()"
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("MyModel.create()"))
+            self.assertEqual(correct, output.getvalue().strip())
+        correct = "*** Unknown syntax: BaseModel.create()"
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("BaseModel.create()"))
+            self.assertEqual(correct, output.getvalue().strip())
+
+    def test_11_show_invalid_class(self):
+        """unit tests for the whole console"""
+        correct = "** class doesn't exist **"
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("show InvalidClass 1234"))
+            self.assertEqual(correct, output.getvalue().strip())
+
+    def test_12_show_invalid_id(self):
+        """unit tests for the whole console"""
+        correct = "** no instance found **"
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("show BaseModel invalid_id"))
+            self.assertEqual(correct, output.getvalue().strip())
+
+    def test_13_destroy_invalid_class(self):
+        """unit tests for the whole console"""
+        correct = "** class doesn't exist **"
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(HBNBCommand().onecmd("destroy InvalidClass 1234"))
+            self.assertEqual(correct, output.getvalue().strip())
+
+    def test_14_destroy_invalid_id(self):
+        """unit tests for the whole console"""
+        correct = "** no instance found **"
+        with patch("sys.stdout", new=StringIO()) as output:
+            self.assertFalse(
+                HBNBCommand().onecmd("destroy BaseModel invalid_id")
+            )
+            self.assertEqual(correct, output.getvalue().strip())
 
 
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

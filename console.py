@@ -1,19 +1,20 @@
 #!/usr/bin/python3
-"""Defines the HBnB console."""
+"""This code creates and operates a console."""
 import cmd
 import re
 from shlex import split
 from models import storage
 from models.base_model import BaseModel
-from models.user import User
 from models.state import State
-from models.city import City
-from models.place import Place
 from models.amenity import Amenity
+from models.place import Place
 from models.review import Review
+from models.user import User
+from models.city import City
 
 
 def parse(arg):
+    """firast function to pass in arguments"""
     curly_braces = re.search(r"\{(.*?)\}", arg)
     brackets = re.search(r"\[(.*?)\]", arg)
     if curly_braces is None:
@@ -32,10 +33,10 @@ def parse(arg):
 
 
 class HBNBCommand(cmd.Cmd):
-    """Defines the HolbertonBnB command interpreter.
+    """a breakdown of the class interpreter.
 
     Attributes:
-        prompt (str): The command prompt.
+        string, save create etc.
     """
 
     prompt = "(hbnb) "
@@ -50,11 +51,11 @@ class HBNBCommand(cmd.Cmd):
     }
 
     def emptyline(self):
-        """Do nothing upon receiving an empty line."""
+        """what to do when we get an empty line."""
         pass
 
     def default(self, arg):
-        """Default behavior for cmd module when input is invalid"""
+        """The normal behaviour"""
         argdict = {
             "all": self.do_all,
             "show": self.do_show,
@@ -75,18 +76,16 @@ class HBNBCommand(cmd.Cmd):
         return False
 
     def do_quit(self, arg):
-        """Quit command to exit the program."""
+        """When and how  to quit the console"""
         return True
 
     def do_EOF(self, arg):
-        """EOF signal to exit the program."""
+        """Notify the end of file in the console."""
         print("")
         return True
 
     def do_create(self, arg):
-        """Usage: create <class>
-        Create a new class instance and print its id.
-        """
+        """used to create a new file/instance in console"""
         argl = parse(arg)
         if len(argl) == 0:
             print("** class name missing **")
@@ -97,9 +96,7 @@ class HBNBCommand(cmd.Cmd):
             storage.save()
 
     def do_show(self, arg):
-        """Usage: show <class> <id> or <class>.show(<id>)
-        Display the string representation of a class instance of a given id.
-        """
+        """prints out all the available instances/files."""
         argl = parse(arg)
         objdict = storage.all()
         if len(argl) == 0:
@@ -114,8 +111,7 @@ class HBNBCommand(cmd.Cmd):
             print(objdict["{}.{}".format(argl[0], argl[1])])
 
     def do_destroy(self, arg):
-        """Usage: destroy <class> <id> or <class>.destroy(<id>)
-        Delete a class instance of a given id."""
+        """used to destroy an instance from within the console."""
         argl = parse(arg)
         objdict = storage.all()
         if len(argl) == 0:
@@ -130,11 +126,8 @@ class HBNBCommand(cmd.Cmd):
             del objdict["{}.{}".format(argl[0], argl[1])]
             storage.save()
 
-   
     def do_all(self, arg):
-        """Usage: all or all <class> or <class>.all()
-        Display string representations of all instances of a given class.
-        If no class is specified, displays all instantiated objects."""
+        """shows all the instances/files in the console."""
         argl = parse(arg)
 
         if len(argl) > 0 and argl[0] not in HBNBCommand.__classes:
@@ -143,24 +136,23 @@ class HBNBCommand(cmd.Cmd):
             obj_list = []
 
             if len(argl) == 0:
-                # If no class name is provided, print all instances of all classes
                 for obj in storage.all().values():
                     obj_list.append(str(obj))
             else:
-                # If class name is provided, print instances of that class
                 class_name = argl[0]
                 try:
                     class_reference = globals()[class_name]
                     obj_list.extend(
-                        str(obj) for obj in storage.all().values() if isinstance(obj, class_reference)
+                        str(obj) for obj in storage.all().values()
+                        if isinstance(obj, class_reference)
                     )
                 except KeyError:
                     print("** class doesn't exist **")
 
         print(obj_list)
+
     def do_count(self, arg):
-        """Usage: count <class> or <class>.count()
-        Retrieve the number of instances of a given class."""
+        """counts all the instances /files from the console."""
         argl = parse(arg)
         count = 0
         for obj in storage.all().values():
@@ -169,11 +161,7 @@ class HBNBCommand(cmd.Cmd):
         print(count)
 
     def do_update(self, arg):
-        """Usage: update <class> <id> <attribute_name> <attribute_value> or
-       <class>.update(<id>, <attribute_name>, <attribute_value>) or
-       <class>.update(<id>, <dictionary>)
-        Update a class instance of a given id by adding or updating
-        a given attribute key/value pair or dictionary."""
+        """updates a file or instance in the console"""
         argl = parse(arg)
         objdict = storage.all()
 
