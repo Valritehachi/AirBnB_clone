@@ -26,7 +26,6 @@ class BaseModel:
         else:
             models.storage.new(self)
 
-
     def to_dict(self):
         """Returns a dictionary containing all keys/values."""
         rdict = self.__dict__.copy()
@@ -39,7 +38,7 @@ class BaseModel:
         """string function"""
         clname = self.__class__.__name__
         return "[{}] ({}) {}".format(clname, self.id, self.__dict__)
- 
+
     def save(self):
         """ update datetime function"""
         self.updated_at = datetime.today()
