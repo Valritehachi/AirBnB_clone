@@ -11,7 +11,7 @@ class BaseModel:
     """base model functionality in its class."""
     def __init__(self, *args, **kwargs):
         """Initialize a new BaseModel instance.
-            arguments :id, save string etc.
+            arguments :id, save, string etc.
         """
         tform = "%Y-%m-%dT%H:%M:%S.%f"
         self.id = str(uuid4())
