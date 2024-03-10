@@ -4,6 +4,7 @@
 Unittest classes:
     create, show, all, etc.
 """
+
 import os
 import sys
 import unittest
@@ -15,7 +16,7 @@ from unittest.mock import patch
 
 
 class TestHBNBCommand(unittest.TestCase):
-    """unit tests for the whole console"""
+    """Unit tests for the whole console"""
 
     def setUp(self):
         self.console = HBNBCommand()
@@ -24,8 +25,8 @@ class TestHBNBCommand(unittest.TestCase):
         pass
 
     @patch('sys.stdout', new_callable=StringIO)
-    def assert_stdout(self, expected_output, mock_stdout, co5mmand):
-        """unit tests for the whole console"""
+    def assert_stdout(self, expected_output, mock_stdout, command):
+        """Unit tests for the whole console"""
         with patch('builtins.input', return_value=command):
             self.console.cmdloop()
             self.assertEqual(
@@ -34,17 +35,17 @@ class TestHBNBCommand(unittest.TestCase):
             )
 
     def test_02_prompt_string(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         self.assertEqual("(hbnb) ", HBNBCommand.prompt)
 
     def test_03_empty_line(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd(""))
             self.assertEqual("", output.getvalue().strip())
 
     def test_04_help(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         h = ("Documented commands (type help <topic>):\n"
              "========================================\n"
              "EOF  all  count  create  destroy  help  quit  show  update")
@@ -53,7 +54,7 @@ class TestHBNBCommand(unittest.TestCase):
             self.assertEqual(h, output.getvalue().strip())
 
     @classmethod
-    def setUp(self):
+    def setUpClass(cls):
         try:
             os.rename("file.json", "tmp")
         except IOError:
@@ -61,7 +62,7 @@ class TestHBNBCommand(unittest.TestCase):
         FileStorage.__objects = {}
 
     @classmethod
-    def tearDown(self):
+    def tearDownClass(cls):
         try:
             os.remove("file.json")
         except IOError:
@@ -72,21 +73,21 @@ class TestHBNBCommand(unittest.TestCase):
             pass
 
     def test_08_create_missing_class(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         correct = "** class name missing **"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("create"))
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_09_create_invalid_class(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         correct = "** class doesn't exist **"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("create MyModel"))
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_10_create_invalid_syntax(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         correct = "*** Unknown syntax: MyModel.create()"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("MyModel.create()"))
@@ -97,28 +98,28 @@ class TestHBNBCommand(unittest.TestCase):
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_11_show_invalid_class(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         correct = "** class doesn't exist **"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("show InvalidClass 1234"))
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_12_show_invalid_id(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         correct = "** no instance found **"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("show BaseModel invalid_id"))
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_13_destroy_invalid_class(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         correct = "** class doesn't exist **"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(HBNBCommand().onecmd("destroy InvalidClass 1234"))
             self.assertEqual(correct, output.getvalue().strip())
 
     def test_14_destroy_invalid_id(self):
-        """unit tests for the whole console"""
+        """Unit tests for the whole console"""
         correct = "** no instance found **"
         with patch("sys.stdout", new=StringIO()) as output:
             self.assertFalse(
